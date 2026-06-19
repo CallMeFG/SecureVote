@@ -2,51 +2,93 @@
 
 @section('content')
 <div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card glass-card p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="text-primary fw-bold">Dashboard Admin</h3>
+    <div class="col-12">
+        <div class="card glass-card p-4 border-0">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom border-light border-opacity-10 gap-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-danger bg-opacity-25 rounded-circle p-3 me-3">
+                        <i class="bi bi-sliders text-danger fs-3"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold text-white mb-0">Konsol Admin Sistem</h3>
+                        <p class="text-muted mb-0">Manajemen Akses & Pemantauan Keamanan Terpusat</p>
+                    </div>
+                </div>
                 
-                <form action="{{ route('admin.periode.toggle') }}" method="POST">
-                    @csrf
-                    @if($period && $period->is_active)
-                        <button class="btn btn-danger fw-bold shadow-sm">Tutup Periode Voting (t = FALSE)</button>
-                    @else
-                        <button class="btn btn-success fw-bold shadow-sm">Buka Periode Voting (t = TRUE)</button>
-                    @endif
-                </form>
-            </div>
-            
-            <div class="alert {{ ($period && $period->is_active) ? 'alert-success' : 'alert-secondary' }} shadow-sm">
-                Status Proposisi t (Periode Aktif): <strong>{{ ($period && $period->is_active) ? 'TRUE' : 'FALSE' }}</strong>
-            </div>
+                <div class="ms-auto d-flex gap-2">
+                    <a href="{{ route('admin.periode.index') }}" class="btn btn-outline-primary fw-bold rounded-3">Manajemen Periode</a>
+                    <a href="{{ route('admin.panitia.index') }}" class="btn btn-outline-info fw-bold rounded-3">Manajemen Panitia</a>
+                </div>
 
-            <hr>
+                <div class="bg-dark bg-opacity-50 p-2 rounded-3 border border-light border-opacity-10 ms-2">
+                    <form action="{{ route('admin.periode.toggle') }}" method="POST" class="m-0">
+                        @csrf
+                        @if($period && $period->is_active)
+                            <button class="btn btn-outline-danger fw-bold shadow-sm d-flex align-items-center">
+                                <i class="bi bi-stop-circle me-2"></i> Kunci Pemilihan
+                            </button>
+                        @else
+                            <button class="btn btn-success fw-bold shadow-sm d-flex align-items-center">
+                                <i class="bi bi-play-circle me-2"></i> Buka Akses Pemilihan
+                            </button>
+                        @endif
+                    </form>
+                </div>
+            </div>
             
-            <h5 class="mt-4">Log Aktivitas (Graf Kejadian)</h5>
-            <div class="table-responsive mt-3">
-                <table class="table table-hover table-bordered align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Waktu</th>
-                            <th>Aktor (NIM)</th>
-                            <th>Action</th>
-                            <th>Status Logika (Proposisi)</th>
-                            <th>Deskripsi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($logs as $log)
-                        <tr>
-                            <td>{{ $log->created_at->format('d/m/Y H:i:s') }}</td>
-                            <td>{{ $log->user ? $log->user->nim : 'Anonim' }}</td>
-                            <td><span class="badge bg-primary">{{ $log->action }}</span></td>
-                            <td class="font-monospace text-muted">{{ $log->proposition_state }}</td>
-                            <td>{{ $log->description }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            @if($period && $period->is_active)
+                <div class="alert bg-success bg-opacity-10 border border-success border-opacity-25 text-success d-flex align-items-center rounded-3">
+                    <div class="spinner-grow spinner-grow-sm me-3 text-success" role="status"></div>
+                    <div><strong>Sistem Aktif:</strong> Portal pemilihan sedang menerima suara dari pemilih yang terverifikasi.</div>
+                </div>
+            @else
+                <div class="alert bg-secondary bg-opacity-10 border border-secondary border-opacity-25 text-light d-flex align-items-center rounded-3">
+                    <i class="bi bi-shield-lock-fill me-3 fs-5"></i>
+                    <div><strong>Sistem Terkunci:</strong> Portal pemilihan saat ini ditutup untuk publik.</div>
+                </div>
+            @endif
+
+            <h5 class="mt-5 mb-4 text-white fw-bold"><i class="bi bi-activity text-info me-2"></i> Log Sistem Keamanan</h5>
+            <div class="card bg-dark bg-opacity-50 border-0 rounded-4 overflow-hidden" style="border: 1px solid rgba(255,255,255,0.05) !important;">
+                <div class="table-responsive">
+                    <table class="table table-hover table-dark table-borderless align-middle mb-0">
+                        <thead class="border-bottom border-light border-opacity-10">
+                            <tr>
+                                <th class="py-3 text-muted fw-bold small text-uppercase ps-4">Waktu</th>
+                                <th class="py-3 text-muted fw-bold small text-uppercase">Aktor / NIM</th>
+                                <th class="py-3 text-muted fw-bold small text-uppercase">Jenis Kejadian</th>
+                                <th class="py-3 text-muted fw-bold small text-uppercase pe-4">Keterangan Teknis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($logs as $log)
+                            <tr class="border-bottom border-light border-opacity-5">
+                                <td class="py-3 ps-4 text-muted small">{{ $log->created_at->format('d/m/Y H:i:s') }}</td>
+                                <td class="py-3 text-light fw-bold">{{ $log->user ? $log->user->nim : 'Sistem' }}</td>
+                                <td class="py-3">
+                                    @php
+                                        $badgeColor = match($log->action) {
+                                            'login_attempt' => 'info',
+                                            'vote_cast' => 'success',
+                                            'access_denied' => 'danger',
+                                            'otp_verify' => 'primary',
+                                            default => 'secondary'
+                                        };
+                                    @endphp
+                                    <span class="badge bg-{{ $badgeColor }} bg-opacity-10 text-{{ $badgeColor }} border border-{{ $badgeColor }} border-opacity-25 px-2 py-1">
+                                        {{ str_replace('_', ' ', strtoupper($log->action)) }}
+                                    </span>
+                                </td>
+                                <td class="py-3 pe-4 text-muted small">{{ $log->description }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">Belum ada log terekam dalam sistem.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

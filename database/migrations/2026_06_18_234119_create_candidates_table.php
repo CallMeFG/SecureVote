@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('candidates', function (Blueprint $table) {
             $table->id();
-            $table->string('nim', 20);
-            $table->string('name', 100);
+            $table->foreignId('voting_period_id')->constrained('voting_periods')->onDelete('cascade');
+            $table->string('nim'); // Dihapus unique() karena kandidat bisa daftar lagi di periode depan? Atau biarkan nim tetap non-unique di level global
+            $table->string('name');
+            $table->string('vice_nim')->nullable();
+            $table->string('vice_name')->nullable();
             $table->text('vision');
             $table->text('mission');
+            $table->string('photo_url')->nullable();
             $table->string('photo_path', 255)->nullable();
             $table->timestamps();
         });

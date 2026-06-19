@@ -15,8 +15,21 @@ class VotingController extends Controller
 {
     public function index()
     {
-        $candidates = Candidate::all();
+        $period = \App\Models\VotingPeriod::where('is_active', true)->first();
+        $candidates = $period ? $period->candidates : collect();
         return view('voting.index', compact('candidates'));
+    }
+
+    public function confirm($id)
+    {
+        $period = \App\Models\VotingPeriod::where('is_active', true)->first();
+        $candidate = Candidate::findOrFail($id);
+        
+        if (!$period || $candidate->voting_period_id !== $period->id) {
+            return redirect()->route('voting.index')->with('error', 'Kandidat tidak valid atau periode tidak aktif.');
+        }
+
+        return view('voting.confirm', compact('candidate', 'period'));
     }
 
     public function submit(Request $request)
@@ -42,8 +55,14 @@ class VotingController extends Controller
                 // Token Voting (Kombinatorika 36^8)
                 $votingToken = $this->generateVotingToken();
 
+                $period = \App\Models\VotingPeriod::where('is_active', true)->first();
+                if (!$period) {
+                    throw new \Exception('Periode voting belum aktif.');
+                }
+
                 Vote::create([
                     'user_id' => $user->id,
+                    'voting_period_id' => $period->id,
                     'candidate_id' => $request->candidate_id,
                     'encrypted_choice' => $encryptedChoice,
                     'voting_token' => $votingToken,

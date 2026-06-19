@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('votes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->unique()->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('voting_period_id')->constrained('voting_periods')->onDelete('cascade');
             $table->foreignId('candidate_id')->constrained('candidates')->onDelete('cascade');
+            
+            // 1 user hanya bisa vote 1x per periode
+            $table->unique(['user_id', 'voting_period_id']);
             $table->string('encrypted_choice', 255);
             $table->string('voting_token', 8);
             $table->timestamp('voted_at');

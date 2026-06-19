@@ -9,10 +9,15 @@ class Candidate extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nim', 'name', 'vision', 'mission', 'photo_path'];
+    protected $fillable = ['voting_period_id', 'nim', 'name', 'vice_nim', 'vice_name', 'vision', 'mission', 'photo_url'];
 
     public function votes()
     {
         return $this->hasMany(Vote::class);
+    }
+
+    public function votingPeriod()
+    {
+        return $this->belongsTo(VotingPeriod::class);
     }
 }

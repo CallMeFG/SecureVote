@@ -9,7 +9,7 @@ class VotingPeriod extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['is_active', 'start_at', 'end_at', 'created_by'];
+    protected $fillable = ['period_name', 'is_active', 'start_at', 'end_at', 'created_by'];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -20,5 +20,15 @@ class VotingPeriod extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function candidates()
+    {
+        return $this->hasMany(Candidate::class);
+    }
+
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
     }
 }

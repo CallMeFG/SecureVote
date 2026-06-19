@@ -9,7 +9,7 @@ class Vote extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'candidate_id', 'encrypted_choice', 'voting_token', 'voted_at'];
+    protected $fillable = ['user_id', 'voting_period_id', 'candidate_id', 'encrypted_choice', 'voting_token', 'voted_at'];
 
     protected $casts = [
         'voted_at' => 'datetime',
@@ -23,5 +23,10 @@ class Vote extends Model
     public function candidate()
     {
         return $this->belongsTo(Candidate::class);
+    }
+
+    public function votingPeriod()
+    {
+        return $this->belongsTo(VotingPeriod::class);
     }
 }

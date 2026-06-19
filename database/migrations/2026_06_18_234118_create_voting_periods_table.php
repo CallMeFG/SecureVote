@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('voting_periods', function (Blueprint $table) {
             $table->id();
+            $table->string('period_name'); // e.g., '2025/2026'
             $table->boolean('is_active')->default(false);
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
