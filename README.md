@@ -2,14 +2,14 @@
   <img src="https://ui-avatars.com/api/?name=Secure+Vote&background=0f172a&color=38bdf8&size=200&rounded=true" alt="SecureVote Logo">
 </p>
 
-# SecureVote: Sistem E-Voting Berbasis Enkripsi & Logika Proposisional
+# SecureVote: Sistem E-Voting Berbasis Himpunan & Logika Proposisional
 
 **SecureVote** adalah sebuah sistem informasi pemilihan (e-voting) terpusat berbasis web yang dikembangkan khusus untuk pemilihan **Gubernur ITSA PCR** (Information Technology Student Association - Politeknik Caltex Riau). Proyek ini dibangun menggunakan *framework* **Laravel 11**, dirancang untuk memastikan kerahasiaan, keamanan, dan integritas penuh dalam setiap tahap pemilihan.
 
-Sistem ini diintegrasikan secara mendalam dengan konsep **Matematika Diskrit**, khususnya penerapan **Logika Proposisional** dalam arsitektur keamanan *login* dan validasi suara. 
+Sistem ini diintegrasikan secara mendalam dengan konsep **Matematika Diskrit**, khususnya penerapan **Teori Himpunan & Logika Proposisional** dalam arsitektur keamanan *login* dan validasi suara. 
 
 ## 🌟 Fitur Utama
-1. **Otentikasi Berlapis Berbasis Logika Proposisional**
+1. **Otentikasi Berlapis Berbasis Teori Himpunan & Logika Proposisional**
 2. **Kerahasiaan Suara dengan Enkripsi AES-256-CBC**
 3. **Pencegahan Double-Vote (Pemilihan Ganda)**
 4. **Three-Tier Role Management** (Super Admin, Panitia KPU, dan Pemilih/Mahasiswa)
