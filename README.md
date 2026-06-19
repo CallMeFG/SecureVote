@@ -17,36 +17,49 @@ Sistem ini diintegrasikan secara mendalam dengan konsep **Matematika Diskrit**, 
 
 ---
 
-## 🔐 Implementasi Logika Proposisional pada Otentikasi
+## 🔐 Implementasi Teori Himpunan & Logika Proposisional pada Sistem Login
 
-Keunikan utama dari sistem SecureVote adalah penggunaan teori himpunan dan **Logika Proposisional** yang ketat pada saat pemilih melakukan *login* atau memberikan hak suaranya.
+Keunikan utama dari sistem SecureVote adalah penggunaan landasan **Matematika Diskrit** yang ketat, khususnya **Teori Himpunan** dan **Logika Proposisional** pada saat pengguna melakukan *login* ke dalam sistem.
 
-Dalam sistem kami, terdapat **4 Variabel Proposisi Utama**:
+### 1. Definisi Teori Himpunan (Set Theory)
+Sistem memandang entitas data pengguna sebagai elemen-elemen dalam himpunan tertentu:
+- **Himpunan Semesta (U):** Seluruh data mahasiswa ITSA PCR yang tercatat di sistem.
+- **Himpunan A:** Himpunan entitas mahasiswa yang memberikan kredensial (NIM & Password) yang valid.
+- **Himpunan B:** Himpunan entitas mahasiswa yang memiliki status akun **Aktif** (`is_active = true`).
+- **Himpunan C:** Himpunan entitas mahasiswa yang **Belum Memilih** (`is_voted = false`).
+
+Untuk dapat menembus gerbang *login* dengan sukses, seorang pengguna ($x$) secara matematis harus berada pada irisan dari Himpunan A dan Himpunan B: 
+$x \in (A \cap B)$
+
+Sedangkan untuk berhak melakukan **Pencoblosan (Voting)**, pengguna wajib berada pada irisan ketiga himpunan tersebut:
+$x \in (A \cap B \cap C)$
+
+### 2. Formulasi Logika Proposisional (Propositional Logic)
+Proses validasi logika kode *backend* Laravel diterjemahkan secara harfiah dari batasan Himpunan di atas. Kami mendefinisikan 4 variabel proposisi utama:
 - **p**: NIM pengguna terdaftar di *database*.
 - **q**: *Password* pengguna cocok (*hash matching*).
-- **r**: Status akun pengguna dalam keadaan **Aktif** (`is_active = true`).
-- **s**: Pengguna **belum memberikan suara** pada periode aktif (`is_voted = false`).
+- **r**: Status akun pengguna dalam keadaan Aktif (`is_active = true`).
+- **s**: Pengguna belum memberikan suara pada periode berjalan (`is_voted = false`).
 
-### Alur Keputusan Login (Truth Table Implementation)
+### Alur Keputusan Login Berbasis Tabel Kebenaran (Truth Table)
+Sistem menggunakan konjungsi ( $\land$ ) dan negasi ( $\lnot$ ) logis untuk mengatur status akses:
 
-Proses *login* divalidasi menggunakan konjungsi logis dari variabel di atas:
+1. **Gagal Login (NIM Tidak Ditemukan)**: $\lnot p$
+   *Sistem langsung menolak karena proposisi identitas ($p$) bernilai **False**.*
+2. **Gagal Login (Password Salah)**: $p \land \lnot q$
+   *Identitas benar, tetapi otentikasi sandi ($q$) bernilai **False**.*
+3. **Gagal Login (Akun Nonaktif)**: $p \land q \land \lnot r$
+   *Kredensial sepenuhnya benar, tetapi otoritas sistem menetapkan akun ditangguhkan ($r$ bernilai **False**).*
+4. **Login Berhasil (Otentikasi Awal Valid)**: $p \land q \land r$
+   *Seluruh kondisi bernilai **True**. Pengguna diizinkan masuk ke Dasbor Pemilih.*
 
-1. **Gagal Login (NIM Salah)**: `¬p`
-   *Sistem memblokir akses karena NIM tidak dikenali.*
-2. **Gagal Login (Password Salah)**: `p ∧ ¬q`
-   *NIM dikenali, tetapi kata sandi salah.*
-3. **Gagal Login (Akun Nonaktif)**: `p ∧ q ∧ ¬r`
-   *Kredensial benar, tetapi akun ditangguhkan/diblokir oleh panitia.*
-4. **Login Berhasil (Otentikasi Awal Valid)**: `p ∧ q ∧ r`
-   *Kredensial benar dan akun aktif. Pengguna dapat masuk ke Dasbor Pemilih.*
+### Lapis Kedua: Logika Validasi Hak Suara (Voting Access)
+Setelah pengguna masuk (*login*), sistem tidak langsung memberikan akses kertas suara. Ada *Middleware Validator* yang memeriksa proposisi sisa:
 
-### Alur Validasi Hak Suara (Voting Access)
-Selain otentikasi awal, sistem juga menerapkan validasi tingkat kedua (*Voting Validator*) saat pengguna mencoba menekan tombol Coblos/Vote:
-
-- **Hak Suara Sah**: `p ∧ q ∧ r ∧ s`
-  *Pengguna aktif dan belum memilih. Formulir surat suara akan ditampilkan.*
-- **Akses Ditolak (Sudah Memilih)**: `(p ∧ q ∧ r) ∧ ¬s`
-  *Pengguna aktif tetapi **sudah memberikan suara**. Sistem langsung memblokir akses ke halaman pemilihan untuk mencegah manipulasi data (Double-Vote protection).*
+- **Hak Suara Sah (Akses Kertas Suara Diizinkan)**: $p \land q \land r \land s$
+  *Seluruh nilai proposisi adalah **True**. Pengguna dipersilakan untuk menekan tombol "Coblos".*
+- **Akses Ditolak (Sudah Memilih)**: $(p \land q \land r) \land \lnot s$
+  *Pengguna aktif, tetapi mereka sudah pernah mencoblos ($s$ berubah menjadi **False**). Sistem seketika memblokir komponen pencoblosan, yang secara fungsional bertindak sebagai **Absolute Double-Vote Protection**.*
 
 ---
 
