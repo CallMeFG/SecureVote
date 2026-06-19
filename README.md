@@ -1,58 +1,105 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://ui-avatars.com/api/?name=Secure+Vote&background=0f172a&color=38bdf8&size=200&rounded=true" alt="SecureVote Logo">
 </p>
 
-## About Laravel
+# SecureVote: Sistem E-Voting Berbasis Enkripsi & Logika Proposisional
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**SecureVote** adalah sebuah sistem informasi pemilihan (e-voting) terpusat berbasis web yang dikembangkan khusus untuk pemilihan **Gubernur ITSA PCR** (Information Technology Student Association - Politeknik Caltex Riau). Proyek ini dibangun menggunakan *framework* **Laravel 11**, dirancang untuk memastikan kerahasiaan, keamanan, dan integritas penuh dalam setiap tahap pemilihan.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Sistem ini diintegrasikan secara mendalam dengan konsep **Matematika Diskrit**, khususnya penerapan **Logika Proposisional** dalam arsitektur keamanan *login* dan validasi suara. 
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🌟 Fitur Utama
+1. **Otentikasi Berlapis Berbasis Logika Proposisional**
+2. **Kerahasiaan Suara dengan Enkripsi AES-256-CBC**
+3. **Pencegahan Double-Vote (Pemilihan Ganda)**
+4. **Three-Tier Role Management** (Super Admin, Panitia KPU, dan Pemilih/Mahasiswa)
+5. **UI/UX Modern (Deep Space Glassmorphism)**
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🔐 Implementasi Logika Proposisional pada Otentikasi
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Keunikan utama dari sistem SecureVote adalah penggunaan teori himpunan dan **Logika Proposisional** yang ketat pada saat pemilih melakukan *login* atau memberikan hak suaranya.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+Dalam sistem kami, terdapat **4 Variabel Proposisi Utama**:
+- **p**: NIM pengguna terdaftar di *database*.
+- **q**: *Password* pengguna cocok (*hash matching*).
+- **r**: Status akun pengguna dalam keadaan **Aktif** (`is_active = true`).
+- **s**: Pengguna **belum memberikan suara** pada periode aktif (`is_voted = false`).
 
-## Agentic Development
+### Alur Keputusan Login (Truth Table Implementation)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Proses *login* divalidasi menggunakan konjungsi logis dari variabel di atas:
 
-```bash
-composer require laravel/boost --dev
+1. **Gagal Login (NIM Salah)**: `¬p`
+   *Sistem memblokir akses karena NIM tidak dikenali.*
+2. **Gagal Login (Password Salah)**: `p ∧ ¬q`
+   *NIM dikenali, tetapi kata sandi salah.*
+3. **Gagal Login (Akun Nonaktif)**: `p ∧ q ∧ ¬r`
+   *Kredensial benar, tetapi akun ditangguhkan/diblokir oleh panitia.*
+4. **Login Berhasil (Otentikasi Awal Valid)**: `p ∧ q ∧ r`
+   *Kredensial benar dan akun aktif. Pengguna dapat masuk ke Dasbor Pemilih.*
 
-php artisan boost:install
-```
+### Alur Validasi Hak Suara (Voting Access)
+Selain otentikasi awal, sistem juga menerapkan validasi tingkat kedua (*Voting Validator*) saat pengguna mencoba menekan tombol Coblos/Vote:
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+- **Hak Suara Sah**: `p ∧ q ∧ r ∧ s`
+  *Pengguna aktif dan belum memilih. Formulir surat suara akan ditampilkan.*
+- **Akses Ditolak (Sudah Memilih)**: `(p ∧ q ∧ r) ∧ ¬s`
+  *Pengguna aktif tetapi **sudah memberikan suara**. Sistem langsung memblokir akses ke halaman pemilihan untuk mencegah manipulasi data (Double-Vote protection).*
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🗄️ Implementasi Relasi Database (Eloquent ORM)
 
-## Code of Conduct
+Arsitektur *database* SecureVote didesain dengan ketat menggunakan *Foreign Key* dan relasi antar tabel (RDBMS). Berikut adalah relasi utama yang digunakan dalam *Eloquent ORM* Laravel:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. `Role` (One-to-Many) `User`
+Setiap akun pengguna (`User`) wajib memiliki satu peran (`Role`), yang menentukan tingkat otoritas mereka (Admin, Panitia, atau Pemilih).
+- **User `belongsTo` Role**: `$user->role->name`
+- **Role `hasMany` Users**: `$role->users`
 
-## Security Vulnerabilities
+### 2. `VotingPeriod` (One-to-Many) `Candidate`
+Setiap Kandidat Paslon terikat pada satu Periode Pemilihan secara eksklusif. Hal ini memungkinkan sistem menyimpan riwayat kandidat dari tahun-tahun sebelumnya tanpa bercampur dengan kandidat tahun aktif.
+- **Candidate `belongsTo` VotingPeriod**
+- **VotingPeriod `hasMany` Candidates**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 3. `VotingPeriod` & `Candidate` (One-to-Many) `Vote`
+Setiap suara (Vote) merekam `voting_period_id` dan `candidate_id`. Uniknya, ID Kandidat (*candidate_id*) juga dienkripsi ke dalam kolom `encrypted_choice` menggunakan metode **AES-256-CBC**, sehingga DBA (Database Administrator) yang melihat tabel `votes` tidak dapat membaca secara langsung siapa yang dipilih oleh seorang *voter* tanpa kunci aplikasi.
 
-## License
+### 4. `User` (One-to-One / One-to-Many) `Vote`
+- Sistem membatasi relasi seorang pemilih (`User`) hanya memiliki maksimal 1 suara (`Vote`) pada periode pemilihan yang sedang berlangsung (One-to-One secara fungsional dalam satu siklus).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 🚀 Panduan Instalasi & Pengujian
+
+### Prasyarat
+- PHP >= 8.2
+- Composer
+- Database MySQL/MariaDB
+
+### Langkah Instalasi
+1. Lakukan *clone* repository ini: `git clone <repo-url>`
+2. Masuk ke direktori aplikasi: `cd securevote_app`
+3. Salin file environment: `cp .env.example .env`
+4. Sesuaikan konfigurasi *database* di file `.env`.
+5. *Install* dependensi: `composer install`
+6. *Generate* App Key (Penting untuk algoritma enkripsi suara): `php artisan key:generate`
+7. Lakukan migrasi beserta *Seeder* bawaan:
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+8. Jalankan server: `php artisan serve`
+
+### Panduan Akun Uji Coba (Dummy Accounts)
+*Seeder* secara otomatis membuat beberapa akun uji coba dengan *password default* `password123`.
+
+- **Admin System**: `ADMIN01`
+- **Panitia KPU**: `PANITIA01`
+- **Pemilih/Voter**: `2501001`, `2501002`, `2501003`
+
+Untuk pengujian perlindungan ganda (Logika `¬s`), Anda dapat masuk dengan akun pemilih, melakukan voting, lalu mencoba untuk login kembali dan mencoblos ulang.
+
+---
+*Dibuat untuk memenuhi tugas Projek Implementasi Matematika Diskrit dan Pengembangan Sistem Cerdas.*
