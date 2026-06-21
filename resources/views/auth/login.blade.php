@@ -40,7 +40,8 @@
                     <button type="submit" class="btn btn-primary fw-bold rounded-pill shadow-glow" style="background: linear-gradient(135deg, #0ea5e9, #3b82f6); border: none;">
                         Masuk
                     </button>
-                    <div class="text-center mt-3">
+                    <div class="text-center mt-3 d-flex justify-content-between px-2">
+                        <a href="{{ route('register') }}" class="btn btn-link text-info small p-0 text-decoration-none border-0 bg-transparent">Registrasi Pemilih Baru</a>
                         <a href="{{ route('public.beranda') }}" class="btn btn-link text-muted small p-0 text-decoration-none border-0 bg-transparent">Akses sebagai Tamu</a>
                     </div>
                 </div>

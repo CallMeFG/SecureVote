@@ -99,6 +99,10 @@ Route::middleware('guest')->group(function () {
     // OTP berada sebelum Auth login selesai, jadi masih terhitung Guest
     Route::get('/otp/verify', [AuthController::class, 'showOtpVerify'])->name('otp.verify.form');
     Route::post('/otp/verify', [AuthController::class, 'verifyOtp'])->name('otp.verify');
+
+    // Registrasi Pemilih (Himpunan Mahasiswa PCR)
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 });
 
 Route::middleware('auth')->group(function () {

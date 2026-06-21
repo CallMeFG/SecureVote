@@ -10,12 +10,69 @@ use App\Models\OtpToken;
 use App\Models\ActivityLog;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Models\Role;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
     public function showLogin()
     {
         return view('auth.login');
+    }
+
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'nim' => 'required|string|max:20|unique:users',
+            'name' => 'required|string|max:100',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:100',
+                'unique:users',
+                function ($attribute, $value, $fail) {
+                    if (!str_ends_with($value, '@mahasiswa.pcr.ac.id')) {
+                        $fail('Email harus menggunakan domain @mahasiswa.pcr.ac.id.');
+                    }
+                },
+            ],
+            'password' => [
+                'required',
+                'confirmed',
+                Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised(), // Menghindari password umum/bocor (Kombinatorika & Ruang Sampel)
+            ],
+        ], [
+            'password.regex' => 'Password harus mengandung minimal satu huruf besar, huruf kecil, angka, dan simbol.',
+        ]);
+
+        $rolePemilih = Role::where('name', 'pemilih')->first();
+
+        $user = User::create([
+            'nim' => $request->nim,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => $rolePemilih->id,
+            'is_active' => true, // Langsung aktif
+            'is_voted' => false,
+        ]);
+
+        $this->logActivity($user->id, 'register', 'Pendaftaran akun baru sukses', 'E');
+
+        // Otomatis login setelah pendaftaran berhasil? Atau redirect ke login?
+        // Sesuai permintaan, akun langsung berstatus aktif dan bisa login. Kita arahkan ke login.
+        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan masuk.');
     }
 
     public function login(Request $request)
@@ -37,20 +94,26 @@ class AuthController extends Controller
             return back()->withErrors(['nim' => 'NIM tidak ditemukan.']);
         }
 
-        // p ∧ ¬q
+        // p ∧ ¬e (Validasi Himpunan Mahasiswa PCR)
+        if ($user->role->name === 'pemilih' && !str_ends_with($user->email, '@mahasiswa.pcr.ac.id')) {
+            $this->logActivity($user->id, 'login_attempt', 'Domain email tidak valid', 'p ∧ ¬e');
+            return back()->withErrors(['nim' => 'Akses ditolak: Hanya Himpunan Mahasiswa PCR (@mahasiswa.pcr.ac.id) yang diizinkan.']);
+        }
+
+        // p ∧ e ∧ ¬q
         if (!Hash::check($request->password, $user->password)) {
-            $this->logActivity($user->id, 'login_attempt', 'Password salah', 'p ∧ ¬q');
+            $this->logActivity($user->id, 'login_attempt', 'Password salah', 'p ∧ e ∧ ¬q');
             return back()->withErrors(['password' => 'Password salah.']);
         }
 
-        // p ∧ q ∧ ¬r
+        // p ∧ e ∧ q ∧ ¬r
         if (!$user->is_active) {
-            $this->logActivity($user->id, 'login_attempt', 'Akun nonaktif', 'p ∧ q ∧ ¬r');
+            $this->logActivity($user->id, 'login_attempt', 'Akun nonaktif', 'p ∧ e ∧ q ∧ ¬r');
             return back()->withErrors(['nim' => 'Akun nonaktif.']);
         }
 
-        // p ∧ q ∧ r (TRUE)
-        $this->logActivity($user->id, 'login_attempt', 'Autentikasi awal berhasil', 'p ∧ q ∧ r');
+        // p ∧ e ∧ q ∧ r (TRUE)
+        $this->logActivity($user->id, 'login_attempt', 'Autentikasi awal berhasil', 'p ∧ e ∧ q ∧ r');
         $this->generateOtp($user);
         session(['otp_user_id' => $user->id]);
 

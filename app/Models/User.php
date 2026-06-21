@@ -56,4 +56,9 @@ class User extends Authenticatable
     {
         return $query->where('is_voted', false);
     }
+
+    public function scopeMahasiswaPcr($query)
+    {
+        return $query->where('email', 'like', '%@mahasiswa.pcr.ac.id');
+    }
 }
