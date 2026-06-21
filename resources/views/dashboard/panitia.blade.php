@@ -15,6 +15,7 @@
                 <div class="ms-auto d-flex gap-2">
                     <a href="{{ route('panitia.kandidat.index') }}" class="btn btn-outline-info fw-bold rounded-3">Kelola Kandidat</a>
                     <a href="{{ route('panitia.dpt.index') }}" class="btn btn-outline-primary fw-bold rounded-3">Kelola DPT</a>
+                    <a href="{{ route('panitia.agenda.index') }}" class="btn btn-outline-warning fw-bold rounded-3">Kelola Agenda</a>
                 </div>
             </div>
             

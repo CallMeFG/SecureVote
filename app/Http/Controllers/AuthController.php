@@ -54,6 +54,7 @@ class AuthController extends Controller
             ],
         ], [
             'password.regex' => 'Password harus mengandung minimal satu huruf besar, huruf kecil, angka, dan simbol.',
+            'password.uncompromised' => 'Kata sandi ini telah ditemukan dalam daftar kebocoran data publik (data leak). Untuk keamanan, silakan gunakan kombinasi password yang lebih unik.',
         ]);
 
         $rolePemilih = Role::where('name', 'pemilih')->first();
@@ -70,9 +71,11 @@ class AuthController extends Controller
 
         $this->logActivity($user->id, 'register', 'Pendaftaran akun baru sukses', 'E');
 
-        // Otomatis login setelah pendaftaran berhasil? Atau redirect ke login?
-        // Sesuai permintaan, akun langsung berstatus aktif dan bisa login. Kita arahkan ke login.
-        return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan masuk.');
+        // Alur Registrasi -> OTP -> Dashboard
+        $this->generateOtp($user);
+        session(['otp_user_id' => $user->id]);
+
+        return redirect()->route('otp.verify.form')->with('success', 'Registrasi berhasil! Silakan selesaikan verifikasi keamanan OTP.');
     }
 
     public function login(Request $request)

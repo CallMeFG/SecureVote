@@ -7,6 +7,7 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\VoterController;
 use App\Http\Controllers\VotingPeriodController;
 use App\Http\Controllers\PanitiaAccountController;
+use App\Http\Controllers\AgendaController;
 use App\Http\Middleware\VotingValidator;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -28,7 +29,8 @@ Route::get('/jadwal', function () {
     if (!$period) {
         $period = App\Models\VotingPeriod::latest('start_at')->first();
     }
-    return view('public.jadwal', compact('period'));
+    $agendas = App\Models\Agenda::where('is_active', true)->orderBy('start_date', 'asc')->get();
+    return view('public.jadwal', compact('period', 'agendas'));
 })->name('public.jadwal');
 
 Route::get('/hasil', function () {
@@ -114,6 +116,8 @@ Route::middleware('auth')->group(function () {
             return view('dashboard.pemilih');
         })->name('pemilih.dashboard');
 
+        Route::post('/dashboard/pemilih/profile', [VoterController::class, 'updateProfile'])->name('pemilih.profile.update');
+
         Route::middleware([VotingValidator::class])->group(function () {
             Route::get('/voting', [VotingController::class, 'index'])->name('voting.index');
             Route::get('/voting/confirm/{id}', [VotingController::class, 'confirm'])->name('voting.confirm');
@@ -140,6 +144,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/panitia/dpt', [VoterController::class, 'index'])->name('panitia.dpt.index');
         Route::post('/panitia/dpt', [VoterController::class, 'store'])->name('panitia.dpt.store');
         Route::delete('/panitia/dpt/{id}', [VoterController::class, 'destroy'])->name('panitia.dpt.destroy');
+
+        // Agenda CRUD
+        Route::get('/panitia/agenda', [AgendaController::class, 'index'])->name('panitia.agenda.index');
+        Route::post('/panitia/agenda', [AgendaController::class, 'store'])->name('panitia.agenda.store');
+        Route::put('/panitia/agenda/{id}', [AgendaController::class, 'update'])->name('panitia.agenda.update');
+        Route::delete('/panitia/agenda/{id}', [AgendaController::class, 'destroy'])->name('panitia.agenda.destroy');
     });
 
     // Admin

@@ -47,7 +47,7 @@
                             <i class="bi bi-eye text-muted" id="toggleIcon"></i>
                         </button>
                     </div>
-                    <div class="form-text text-muted" style="font-size: 0.75rem;">Kombinatorika Password: Wajib huruf besar, kecil, angka, dan simbol khusus (menambah ruang sampel tebakan).</div>
+                    <div class="form-text text-muted" style="font-size: 0.75rem;">Wajib mengandung huruf besar, huruf kecil, angka, dan simbol khusus.</div>
                     @error('password')
                         <div class="text-danger small mt-1">{{ $message }}</div>
                     @enderror
