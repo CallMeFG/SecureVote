@@ -21,14 +21,18 @@ class VotingPeriodController extends Controller
             'end_at' => 'required|date|after:start_at',
         ]);
 
+        if (VotingPeriod::where('is_active', true)->exists()) {
+            return back()->with('error', 'Tidak dapat membuat periode baru karena masih ada periode yang berstatus aktif. Kunci periode yang berjalan terlebih dahulu.');
+        }
+
         VotingPeriod::create([
             'period_name' => $request->period_name,
             'start_at' => $request->start_at,
             'end_at' => $request->end_at,
-            'is_active' => false,
+            'is_active' => true,
             'created_by' => auth()->id(),
         ]);
 
-        return back()->with('success', 'Periode baru berhasil dibuat. Sistem akan tetap terkunci sampai Anda mengaktifkannya.');
+        return back()->with('success', 'Periode baru berhasil dibuat dan langsung diaktifkan sebagai periode pemilihan saat ini.');
     }
 }

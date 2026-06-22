@@ -57,6 +57,33 @@
                     </div>
                 </div>
             </div>
+
+            <!-- List Panitia -->
+            <div class="mt-5">
+                <h5 class="text-white fw-bold mb-3"><i class="bi bi-person-badge"></i> Daftar Rekan Panitia (KPU)</h5>
+                <div class="card glass-card p-4 border-0">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="py-3 text-muted fw-bold small text-uppercase">Nama</th>
+                                    <th class="py-3 text-muted fw-bold small text-uppercase">Email</th>
+                                    <th class="py-3 text-muted fw-bold small text-uppercase">NIM/ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($panitias as $pan)
+                                <tr>
+                                    <td class="text-white fw-bold">{{ $pan->name }}</td>
+                                    <td class="text-muted">{{ $pan->email }}</td>
+                                    <td class="text-info">{{ $pan->nim }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

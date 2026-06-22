@@ -9,7 +9,7 @@ class Candidate extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['voting_period_id', 'nim', 'name', 'vice_nim', 'vice_name', 'vision', 'mission', 'photo_url'];
+    protected $fillable = ['voting_period_id', 'nim', 'name', 'email', 'vice_nim', 'vice_name', 'vice_email', 'vision', 'mission', 'photo_url'];
 
     public function votes()
     {

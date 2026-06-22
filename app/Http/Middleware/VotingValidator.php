@@ -31,6 +31,18 @@ class VotingValidator
             return redirect()->route('error.access_denied')->with('error', 'Akses Ditolak: Saat ini bukan periode voting.');
         }
 
+        // c: apakah kandidat? (Kandidat tidak boleh memilih)
+        $isCandidate = \App\Models\Candidate::where('voting_period_id', $period->id)
+            ->where(function ($query) use ($user) {
+                $query->where('email', $user->email)
+                      ->orWhere('vice_email', $user->email);
+            })->exists();
+
+        if ($isCandidate) {
+            $this->logActivity($user->id, 'access_denied', 'Ditolak: Kandidat tidak diizinkan memilih', 'p ∧ q ∧ r ∧ s ∧ ¬v ∧ t ∧ c');
+            return redirect()->route('error.access_denied')->with('error', 'Akses Ditolak: Sebagai kandidat, Anda tidak diizinkan untuk memberikan suara.');
+        }
+
         return $next($request);
     }
 

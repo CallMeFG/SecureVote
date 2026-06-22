@@ -19,21 +19,6 @@
                     <a href="{{ route('admin.periode.index') }}" class="btn btn-outline-primary fw-bold rounded-3">Manajemen Periode</a>
                     <a href="{{ route('admin.panitia.index') }}" class="btn btn-outline-info fw-bold rounded-3">Manajemen Panitia</a>
                 </div>
-
-                <div class="bg-dark bg-opacity-50 p-2 rounded-3 border border-light border-opacity-10 ms-2">
-                    <form action="{{ route('admin.periode.toggle') }}" method="POST" class="m-0">
-                        @csrf
-                        @if($period && $period->is_active)
-                            <button class="btn btn-outline-danger fw-bold shadow-sm d-flex align-items-center">
-                                <i class="bi bi-stop-circle me-2"></i> Kunci Pemilihan
-                            </button>
-                        @else
-                            <button class="btn btn-success fw-bold shadow-sm d-flex align-items-center">
-                                <i class="bi bi-play-circle me-2"></i> Buka Akses Pemilihan
-                            </button>
-                        @endif
-                    </form>
-                </div>
             </div>
             
             @if($period && $period->is_active)
@@ -56,6 +41,7 @@
                             <tr>
                                 <th class="py-3 text-muted fw-bold small text-uppercase ps-4">Waktu</th>
                                 <th class="py-3 text-muted fw-bold small text-uppercase">Aktor / NIM</th>
+                                <th class="py-3 text-muted fw-bold small text-uppercase">Nama Aktor</th>
                                 <th class="py-3 text-muted fw-bold small text-uppercase">Jenis Kejadian</th>
                                 <th class="py-3 text-muted fw-bold small text-uppercase pe-4">Keterangan Teknis</th>
                             </tr>
@@ -65,6 +51,7 @@
                             <tr class="border-bottom border-light border-opacity-5">
                                 <td class="py-3 ps-4 text-muted small">{{ $log->created_at->format('d/m/Y H:i:s') }}</td>
                                 <td class="py-3 text-light fw-bold">{{ $log->user ? $log->user->nim : 'Sistem' }}</td>
+                                <td class="py-3 text-light">{{ $log->user ? $log->user->name : '-' }}</td>
                                 <td class="py-3">
                                     @php
                                         $badgeColor = match($log->action) {
@@ -83,7 +70,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">Belum ada log terekam dalam sistem.</td>
+                                <td colspan="5" class="text-center py-4 text-muted">Belum ada log terekam dalam sistem.</td>
                             </tr>
                             @endforelse
                         </tbody>

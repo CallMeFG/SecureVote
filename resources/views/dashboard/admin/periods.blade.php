@@ -40,6 +40,7 @@
                                 <th>Periode</th>
                                 <th>Jadwal</th>
                                 <th>Status</th>
+                                <th class="text-end">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -52,9 +53,21 @@
                                 </td>
                                 <td>
                                     @if($period->is_active)
-                                        <span class="badge bg-success shadow-glow-success">AKTIF</span>
+                                        <span class="badge bg-success shadow-glow-success px-3 py-2">AKTIF</span>
                                     @else
-                                        <span class="badge bg-secondary">DITUTUP</span>
+                                        <span class="badge bg-secondary px-3 py-2">DITUTUP</span>
+                                    @endif
+                                </td>
+                                <td class="text-end">
+                                    @if($period->is_active)
+                                        <form action="{{ route('admin.periode.toggle', $period->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin MENGUNCI (TUTUP) periode pemilihan ini? Periode yang telah ditutup tidak dapat dibuka kembali!');">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-danger fw-bold shadow-sm px-3 d-inline-flex align-items-center">
+                                                <i class="bi bi-lock-fill me-2"></i> Kunci Pemilihan
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-muted small fw-bold"><i class="bi bi-check-all me-1"></i> Telah Berakhir</span>
                                     @endif
                                 </td>
                             </tr>

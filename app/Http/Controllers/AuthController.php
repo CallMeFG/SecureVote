@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\Role;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class AuthController extends Controller
 {
@@ -135,7 +137,13 @@ class AuthController extends Controller
             'is_used' => false,
         ]);
         
-        session()->flash('debug_otp', $numericToken); // Simulate SMS/Email
+        try {
+            Mail::to($user->email)->send(new OtpMail($user, (string) $numericToken));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengirim email OTP: ' . $e->getMessage());
+        }
+        
+        // session()->flash('debug_otp', $numericToken); // Simulate SMS/Email (Dinonaktifkan karena email riil sudah aktif)
     }
 
     public function showOtpVerify()

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class VoterController extends Controller
 {
@@ -16,33 +17,38 @@ class VoterController extends Controller
         return view('dashboard.panitia.voters', compact('voters'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nim' => 'required|string|max:255|unique:users,nim',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-        ]);
-
-        $role = Role::where('name', 'pemilih')->first();
-
-        User::create([
-            'nim' => $request->nim,
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make('password123'), // Default password
-            'role_id' => $role->id,
-            'is_active' => true,
-            'is_voted' => false,
-        ]);
-
-        return back()->with('success', 'Pemilih berhasil ditambahkan dengan kata sandi default: password123');
-    }
+    // Penambahan DPT oleh panitia telah dinonaktifkan demi keamanan.
 
     public function destroy($id)
     {
         $voter = User::findOrFail($id);
         $voter->delete();
         return back()->with('success', 'Data pemilih berhasil dihapus.');
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $user = auth()->user();
+
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($user->photo_path && Storage::disk('public')->exists($user->photo_path)) {
+                Storage::disk('public')->delete($user->photo_path);
+            }
+
+            // Store new photo
+            $path = $request->file('photo')->store('profiles', 'public');
+            
+            $user->photo_path = $path;
+            $user->save();
+
+            return back()->with('success', 'Foto profil berhasil diperbarui.');
+        }
+
+        return back()->with('error', 'Gagal mengunggah foto profil.');
     }
 }

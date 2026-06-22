@@ -23,11 +23,16 @@ class CandidateController extends Controller
         $request->validate([
             'nim' => 'required|string|max:255',
             'name' => 'required|string|max:255',
+            'email' => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@mahasiswa\.pcr\.ac\.id$/'],
             'vice_nim' => 'nullable|string|max:255',
             'vice_name' => 'nullable|string|max:255',
+            'vice_email' => ['nullable', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@mahasiswa\.pcr\.ac\.id$/'],
             'vision' => 'required|string',
             'mission' => 'required|string',
             'photo_url' => 'nullable|url',
+        ], [
+            'email.regex' => 'Email ketua harus berakhiran @mahasiswa.pcr.ac.id',
+            'vice_email.regex' => 'Email wakil harus berakhiran @mahasiswa.pcr.ac.id',
         ]);
 
         $period = VotingPeriod::where('is_active', true)->first();

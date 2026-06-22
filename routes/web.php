@@ -127,12 +127,16 @@ Route::middleware('auth')->group(function () {
 
     // Panitia
     Route::middleware([RoleMiddleware::class.':panitia'])->group(function () {
-        Route::get('/panitia/dashboard', function () {
-            $pemilihQuery = \App\Models\User::whereHas('role', function($q){ $q->where('name', 'pemilih'); });
-            $totalPemilih = (clone $pemilihQuery)->count();
-            $sudahMemilih = (clone $pemilihQuery)->sudahMemilih()->count();
-            $belumMemilih = (clone $pemilihQuery)->belumMemilih()->count();
-            return view('dashboard.panitia', compact('totalPemilih', 'sudahMemilih', 'belumMemilih'));
+        Route::get('/panitia', function () {
+            $role = \App\Models\Role::where('name', 'pemilih')->first();
+            $totalPemilih = \App\Models\User::where('role_id', $role->id)->count();
+            $sudahMemilih = \App\Models\User::where('role_id', $role->id)->where('is_voted', true)->count();
+            $belumMemilih = $totalPemilih - $sudahMemilih;
+            
+            $panitiaRole = \App\Models\Role::where('name', 'panitia')->first();
+            $panitias = \App\Models\User::where('role_id', $panitiaRole->id)->get();
+            
+            return view('dashboard.panitia', compact('totalPemilih', 'sudahMemilih', 'belumMemilih', 'panitias'));
         })->name('panitia.dashboard');
 
         // Kandidat CRUD
@@ -140,10 +144,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/panitia/kandidat', [CandidateController::class, 'store'])->name('panitia.kandidat.store');
         Route::delete('/panitia/kandidat/{id}', [CandidateController::class, 'destroy'])->name('panitia.kandidat.destroy');
 
-        // DPT CRUD
-        Route::get('/panitia/dpt', [VoterController::class, 'index'])->name('panitia.dpt.index');
-        Route::post('/panitia/dpt', [VoterController::class, 'store'])->name('panitia.dpt.store');
-        Route::delete('/panitia/dpt/{id}', [VoterController::class, 'destroy'])->name('panitia.dpt.destroy');
+        // DPT
+        Route::get('/panitia/dpt', [\App\Http\Controllers\VoterController::class, 'index'])->name('panitia.dpt.index');
+        Route::delete('/panitia/dpt/{id}', [\App\Http\Controllers\VoterController::class, 'destroy'])->name('panitia.dpt.destroy');
 
         // Agenda CRUD
         Route::get('/panitia/agenda', [AgendaController::class, 'index'])->name('panitia.agenda.index');
@@ -163,15 +166,16 @@ Route::middleware('auth')->group(function () {
             return view('dashboard.admin', compact('logs', 'period'));
         })->name('admin.dashboard');
         
-        Route::post('/admin/periode/toggle', function (\Illuminate\Http\Request $request) {
-            $period = \App\Models\VotingPeriod::where('is_active', true)->first();
-            if (!$period) {
-                $period = \App\Models\VotingPeriod::latest('start_at')->first() ?? new \App\Models\VotingPeriod();
+        Route::post('/admin/periode/toggle/{id}', function (\Illuminate\Http\Request $request, $id) {
+            $period = \App\Models\VotingPeriod::findOrFail($id);
+            
+            if (!$period->is_active) {
+                return back()->with('error', 'Gagal! Periode yang sudah ditutup tidak dapat dibuka kembali secara manual.');
             }
-            $period->is_active = !$period->is_active;
-            $period->created_by = auth()->id();
+            
+            $period->is_active = false;
             $period->save();
-            return back()->with('success', 'Status periode voting berhasil diubah.');
+            return back()->with('success', 'Periode pemilihan berhasil dikunci secara permanen.');
         })->name('admin.periode.toggle');
 
         // Periode CRUD

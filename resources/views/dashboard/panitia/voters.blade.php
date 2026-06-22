@@ -8,36 +8,12 @@
     </div>
 
     <div class="row">
-        <div class="col-md-4">
-            <div class="card glass-card p-4 border-0 mb-4">
-                <h5 class="text-primary fw-bold mb-3"><i class="bi bi-person-plus-fill"></i> Tambah Pemilih</h5>
-                <form action="{{ route('panitia.dpt.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label text-muted small">NIM Pemilih</label>
-                        <input type="text" name="nim" class="form-control bg-dark text-white border-secondary" required>
-                        @error('nim')<div class="text-danger small">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small">Nama Lengkap</label>
-                        <input type="text" name="name" class="form-control bg-dark text-white border-secondary" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small">Email Mahasiswa</label>
-                        <input type="email" name="email" class="form-control bg-dark text-white border-secondary" required>
-                        @error('email')<div class="text-danger small">{{ $message }}</div>@enderror
-                    </div>
-                    <div class="alert alert-dark small border-secondary border-opacity-25">
-                        <i class="bi bi-info-circle text-info"></i> Password default akun pemilih baru adalah <code>password123</code>.
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 fw-bold">Tambahkan Pemilih</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="col-md-8">
+        <div class="col-12">
             <div class="card glass-card p-4 border-0">
                 <h5 class="text-white fw-bold mb-3">Data Pemilih (Total: {{ $voters->count() }})</h5>
+                <div class="alert alert-warning small">
+                    <i class="bi bi-shield-lock"></i> Penambahan akun secara manual oleh panitia telah dinonaktifkan demi alasan keamanan dan integritas data pemilu.
+                </div>
                 <div class="table-responsive">
                     <table class="table table-dark table-hover align-middle">
                         <thead>
