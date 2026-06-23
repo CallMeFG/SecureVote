@@ -11,9 +11,7 @@
         <div class="col-12">
             <div class="card glass-card p-4 border-0">
                 <h5 class="text-white fw-bold mb-3">Data Pemilih (Total: {{ $voters->count() }})</h5>
-                <div class="alert alert-warning small">
-                    <i class="bi bi-shield-lock"></i> Penambahan akun secara manual oleh panitia telah dinonaktifkan demi alasan keamanan dan integritas data pemilu.
-                </div>
+
                 <div class="table-responsive">
                     <table class="table table-dark table-hover align-middle">
                         <thead>

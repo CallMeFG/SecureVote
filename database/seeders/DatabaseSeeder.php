@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'nim' => 'PANITIA01',
             'name' => 'Ketua Panitia KPU',
-            'email' => 'andrew24ti@mahasiswa.pcr.ac.id',
+            'email' => 'assani200306@gmail.com',
             'password' => Hash::make('PanitiaPcr@2026!'),
             'role_id' => $rolePanitia->id,
             'is_active' => true,
@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
         $voter1 = User::create([
             'nim' => '2501001',
             'name' => 'Mahasiswa Pemilih 1',
-            'email' => 'cahyo24ti@mahasiswa.pcr.ac.id',
+            'email' => 'zilaagila6@gmail.com',
             'password' => Hash::make('MhsPcr@2026!'),
             'role_id' => $rolePemilih->id,
             'is_active' => true,

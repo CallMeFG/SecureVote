@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use App\Models\Role;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cookie;
 use App\Mail\OtpMail;
 
 class AuthController extends Controller
@@ -39,7 +40,7 @@ class AuthController extends Controller
                 'max:100',
                 'unique:users',
                 function ($attribute, $value, $fail) {
-                    if (!str_ends_with($value, '@mahasiswa.pcr.ac.id')) {
+                    if (app()->environment('production') && !str_ends_with($value, '@mahasiswa.pcr.ac.id')) {
                         $fail('Email harus menggunakan domain @mahasiswa.pcr.ac.id.');
                     }
                 },
@@ -76,6 +77,7 @@ class AuthController extends Controller
         // Alur Registrasi -> OTP -> Dashboard
         $this->generateOtp($user);
         session(['otp_user_id' => $user->id]);
+        session(['otp_last_sent_at' => time()]);
 
         return redirect()->route('otp.verify.form')->with('success', 'Registrasi berhasil! Silakan selesaikan verifikasi keamanan OTP.');
     }
@@ -100,7 +102,7 @@ class AuthController extends Controller
         }
 
         // p ∧ ¬e (Validasi Himpunan Mahasiswa PCR)
-        if ($user->role->name === 'pemilih' && !str_ends_with($user->email, '@mahasiswa.pcr.ac.id')) {
+        if (app()->environment('production') && $user->role->name === 'pemilih' && !str_ends_with($user->email, '@mahasiswa.pcr.ac.id')) {
             $this->logActivity($user->id, 'login_attempt', 'Domain email tidak valid', 'p ∧ ¬e');
             return back()->withErrors(['nim' => 'Akses ditolak: Hanya Himpunan Mahasiswa PCR (@mahasiswa.pcr.ac.id) yang diizinkan.']);
         }
@@ -119,8 +121,22 @@ class AuthController extends Controller
 
         // p ∧ e ∧ q ∧ r (TRUE)
         $this->logActivity($user->id, 'login_attempt', 'Autentikasi awal berhasil', 'p ∧ e ∧ q ∧ r');
+
+        // Cek Trusted Device Cookie (Bypass OTP)
+        $trustedCookie = Cookie::get('trusted_device_' . $user->id);
+        if ($trustedCookie === 'trusted') {
+            Auth::login($user);
+            $this->logActivity($user->id, 'login_success', 'Login berhasil (Trusted Device Bypass)', 'bypass_otp');
+
+            if ($user->role->name === 'pemilih') return redirect()->route('pemilih.dashboard');
+            if ($user->role->name === 'panitia') return redirect()->route('panitia.dashboard');
+            if ($user->role->name === 'admin') return redirect()->route('admin.dashboard');
+            return redirect('/');
+        }
+
         $this->generateOtp($user);
         session(['otp_user_id' => $user->id]);
+        session(['otp_last_sent_at' => time()]);
 
         return redirect()->route('otp.verify.form');
     }
@@ -182,6 +198,9 @@ class AuthController extends Controller
         Auth::login($user);
         session()->forget('otp_user_id');
 
+        // Set Trusted Device Cookie berlaku 30 hari (43200 menit)
+        Cookie::queue('trusted_device_' . $user->id, 'trusted', 43200);
+
         $this->logActivity($user->id, 'otp_verify', 'Sesi aktif penuh', 'p ∧ q ∧ r ∧ s');
 
         if ($user->role->name === 'pemilih') {
@@ -193,6 +212,30 @@ class AuthController extends Controller
         }
 
         return redirect('/');
+    }
+
+    public function resendOtp(Request $request)
+    {
+        $userId = session('otp_user_id');
+        if (!$userId) {
+            return redirect()->route('login');
+        }
+
+        $lastSent = session('otp_last_sent_at');
+        // Jika nilai session masih berupa objek/string lama, is_numeric akan mengabaikan blok ini
+        if ($lastSent && is_numeric($lastSent) && (time() - $lastSent) < 30) {
+            return back()->with('error', 'Harap tunggu 30 detik sebelum meminta OTP baru.');
+        }
+
+        $user = User::find($userId);
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $this->generateOtp($user);
+        session(['otp_last_sent_at' => time()]);
+
+        return back()->with('success', 'Kode OTP baru telah berhasil dikirimkan ke email Anda.');
     }
 
     public function logout()
