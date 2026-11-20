@@ -3,10 +3,10 @@
 @section('content')
 <div class="row justify-content-center align-items-center">
     <div class="col-md-6 col-lg-5">
-        <div class="card glass-card p-4 rounded-4 border-0" style="box-shadow: 0 0 30px rgba(56, 189, 248, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.05); position: relative; overflow: hidden;">
+        <div class="card glass-card p-4 rounded-4 border-0" style="box-shadow: 0 0 30px rgba(255, 0, 0, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.05); position: relative; overflow: hidden;">
             
             <!-- Dekorasi Glow Background -->
-            <div class="position-absolute top-0 start-50 translate-middle" style="width: 200px; height: 100px; background: radial-gradient(ellipse, rgba(56,189,248,0.25) 0%, rgba(0,0,0,0) 70%);"></div>
+            <div class="position-absolute top-0 start-50 translate-middle" style="width: 200px; height: 100px; background: radial-gradient(ellipse, rgba(255,0,0,0.25) 0%, rgba(0,0,0,0) 70%);"></div>
 
             <div class="text-center mb-4 position-relative pt-2" style="z-index: 1;">
                 <h4 class="fw-bold text-white mb-1">Registrasi Pemilih</h4>
@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="d-grid mt-4 position-relative" style="z-index: 1;">
-                    <button type="submit" class="btn btn-primary fw-bold rounded-pill shadow-glow" style="background: linear-gradient(135deg, #0ea5e9, #3b82f6); border: none;">
+                    <button type="submit" class="btn btn-primary fw-bold rounded-pill shadow-glow">
                         Daftar
                     </button>
                     <div class="text-center mt-3">

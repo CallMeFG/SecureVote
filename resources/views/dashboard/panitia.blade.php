@@ -21,7 +21,7 @@
             
             <div class="row g-4 mt-2">
                 <div class="col-md-4">
-                    <div class="card bg-primary bg-opacity-10 border-0 h-100 p-4 rounded-4 position-relative overflow-hidden" style="border: 1px solid rgba(56,189,248,0.2) !important;">
+                    <div class="card bg-primary bg-opacity-10 border-0 h-100 p-4 rounded-4 position-relative overflow-hidden" style="border: 1px solid rgba(255,0,0,0.2) !important;">
                         <i class="bi bi-people-fill position-absolute text-primary opacity-25" style="font-size: 8rem; right: -20px; bottom: -30px;"></i>
                         <h6 class="text-info fw-bold text-uppercase tracking-wider mb-2">Total DPT</h6>
                         <h1 class="display-3 fw-bold text-white mb-0">{{ number_format($totalPemilih) }}</h1>

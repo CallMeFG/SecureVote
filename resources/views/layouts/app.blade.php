@@ -18,17 +18,23 @@
     <style>
         :root {
             --primary-bg: #0B1120; /* Deep navy */
-            --accent-glow: #38bdf8; /* Cyan */
-            --accent-secondary: #818cf8; /* Purple */
+            --accent-glow: #ff0000; /* RGB(255, 0, 0) */
+            --accent-secondary: #b91c1c;
             --glass-bg: rgba(30, 41, 59, 0.6);
             --glass-border: rgba(255, 255, 255, 0.1);
+            --bs-primary: #ff0000;
+            --bs-primary-rgb: 255, 0, 0;
+            --bs-info: #ff0000;
+            --bs-info-rgb: 255, 0, 0;
+            --bs-link-color: #ff4d4d;
+            --bs-link-hover-color: #ff8080;
         }
 
         body {
             background-color: var(--primary-bg);
             background-image: 
-                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(129, 140, 248, 0.15) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(255, 0, 0, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(185, 28, 28, 0.15) 0px, transparent 50%);
             background-attachment: fixed;
             color: #f8fafc;
             font-family: 'Inter', sans-serif;
@@ -53,7 +59,7 @@
 
         .glass-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 40px rgba(56, 189, 248, 0.15);
+            box-shadow: 0 10px 40px rgba(255, 0, 0, 0.15);
         }
 
         /* Navbar customization */
@@ -72,7 +78,7 @@
         .navbar-custom .nav-link:hover,
         .navbar-custom .nav-link.active {
             color: var(--accent-glow);
-            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
             transform: translateY(-1px);
         }
 
@@ -93,13 +99,13 @@
             border-radius: 10px;
             padding: 10px 24px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.5);
-            background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5);
+            background: linear-gradient(135deg, #ff4d4d 0%, #b91c1c 100%);
         }
 
         .btn-outline-light {
@@ -143,7 +149,7 @@
         .form-control:focus {
             background: rgba(15, 23, 42, 0.8);
             border-color: var(--accent-glow);
-            box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(255, 0, 0, 0.25);
             color: white;
         }
         
@@ -190,6 +196,16 @@
         hr {
             border-color: var(--glass-border);
             opacity: 1;
+        }
+
+        .text-info,
+        .text-primary {
+            color: #ff4d4d !important;
+        }
+
+        .border-info,
+        .border-primary {
+            border-color: rgba(255, 0, 0, 0.5) !important;
         }
     </style>
 </head>
@@ -286,7 +302,7 @@
                     icon: 'info',
                     background: '#1e293b',
                     color: '#fff',
-                    confirmButtonColor: '#38bdf8',
+                    confirmButtonColor: '#ff0000',
                     toast: true,
                     position: 'top-end',
                     showConfirmButton: false,
