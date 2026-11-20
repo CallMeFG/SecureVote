@@ -14,7 +14,7 @@
 <div class="row justify-content-center g-4">
     <div class="col-md-6 col-lg-5">
         <!-- Candidate Card -->
-        <div class="card glass-card h-100 border-0 rounded-4 overflow-hidden position-relative" style="box-shadow: 0 0 40px rgba(56, 189, 248, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.05);">
+        <div class="card glass-card h-100 border-0 rounded-4 overflow-hidden position-relative" style="box-shadow: 0 0 40px rgba(255, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.05);">
             <div class="bg-primary text-center py-2 fw-bold tracking-wide" style="letter-spacing: 2px;">
                 KANDIDAT PILIHAN ANDA
             </div>
@@ -97,7 +97,7 @@
             background: '#1e293b',
             color: '#fff',
             showCancelButton: true,
-            confirmButtonColor: '#10b981',
+            confirmButtonColor: '#ff0000',
             cancelButtonColor: '#64748b',
             confirmButtonText: 'Ya, Coblos Sekarang!',
             cancelButtonText: 'Batal'

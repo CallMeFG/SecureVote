@@ -38,14 +38,14 @@
 <div class="row justify-content-center g-4">
     @forelse($candidates as $candidate)
         <div class="col-md-6 col-lg-5">
-            <div class="card glass-card h-100 border-0 rounded-4 overflow-hidden position-relative" style="transition: transform 0.3s ease; box-shadow: 0 0 30px rgba(56, 189, 248, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.05);">
+            <div class="card glass-card h-100 border-0 rounded-4 overflow-hidden position-relative" style="transition: transform 0.3s ease; box-shadow: 0 0 30px rgba(255, 0, 0, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.05);">
                 
                 <!-- Background Banner -->
                 @if($candidate->photo_url)
                 <div class="bg-dark w-100" style="background-image: linear-gradient(to bottom, rgba(11, 17, 32, 0.1), rgba(11, 17, 32, 1)), url('{{ $candidate->photo_url }}'); background-size: cover; background-position: center; height: 160px;">
                 </div>
                 @else
-                <div class="bg-primary bg-opacity-25 w-100 d-flex align-items-center justify-content-center" style="height: 160px; background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 1) 100%);">
+                <div class="bg-primary bg-opacity-25 w-100 d-flex align-items-center justify-content-center" style="height: 160px; background: linear-gradient(135deg, rgba(255, 0, 0, 0.2) 0%, rgba(15, 23, 42, 1) 100%);">
                     <i class="bi bi-person-bounding-box text-info opacity-50" style="font-size: 4rem;"></i>
                 </div>
                 @endif
@@ -102,7 +102,7 @@
                     @auth
                         @if(auth()->user()->role->name === 'pemilih' && !auth()->user()->is_voted && $period && $period->is_active)
                             <div class="mt-4 mb-2 px-2">
-                                <a href="{{ route('voting.confirm', $candidate->id) }}" class="btn btn-primary w-100 py-3 fw-bold rounded-3" style="box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);">
+                                <a href="{{ route('voting.confirm', $candidate->id) }}" class="btn btn-primary w-100 py-3 fw-bold rounded-3" style="box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);">
                                     VOTE NOMOR {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
                                 </a>
                             </div>

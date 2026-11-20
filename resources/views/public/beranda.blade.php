@@ -27,7 +27,7 @@
         <!-- Modern abstract graphic representation -->
         <div class="position-relative d-inline-block">
             <div class="position-absolute top-50 start-50 translate-middle w-100 h-100 bg-primary opacity-25 rounded-circle blur-3xl" style="filter: blur(80px); width: 300px; height: 300px;"></div>
-            <i class="bi bi-shield-lock-fill text-white opacity-75" style="font-size: 15rem; filter: drop-shadow(0 0 30px rgba(56,189,248,0.5));"></i>
+            <i class="bi bi-shield-lock-fill text-white opacity-75" style="font-size: 15rem; filter: drop-shadow(0 0 30px rgba(255,0,0,0.5));"></i>
         </div>
     </div>
 </div>
@@ -35,7 +35,7 @@
 <!-- Section: Tentang PCR & Tema -->
 <div class="row mt-5 pt-5 pb-4 border-top border-light border-opacity-10 align-items-center">
     <div class="col-lg-6 mb-4 mb-lg-0 order-2 order-lg-1">
-        <div class="card glass-card p-4 border-0 rounded-4" style="box-shadow: 0 0 20px rgba(56, 189, 248, 0.05);">
+        <div class="card glass-card p-4 border-0 rounded-4" style="box-shadow: 0 0 20px rgba(255, 0, 0, 0.05);">
             <div class="d-flex align-items-center mb-3">
                 <div class="bg-primary bg-opacity-25 p-3 rounded text-info me-3">
                     <i class="bi bi-building fs-3"></i>
